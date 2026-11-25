@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptic Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="treasure.css">
+</head>
+<body>
+
+    <main class="scene">
+        <img class="bg" src="assets/game-background.jpg" alt="A golden treasure room">
+
+        <img class="sprite character" id="character" src="assets/character.png" alt="A little girl with a pink bow">
+
+        <!-- the chest: the three pictures share the same canvas, so they line up by themselves -->
+        <div class="chest" id="chest">
+            <img class="chest-closed" src="assets/treasure-before.png" alt="A closed golden treasure chest">
+            <img class="chest-open" src="assets/treasure-after.png" alt="">
+            <img class="gear" id="gear" src="assets/treasure-gear-switch.png" alt="">
+        </div>
+
+        <!-- keep clicking: the ring fills up, the gear turns -->
+        <button type="button" class="open-btn" id="openBtn" aria-label="Open the treasure chest. Keep clicking!">
+            <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="ring-track" cx="50" cy="50" r="46"></circle>
+                <circle class="ring-fill" id="ringFill" cx="50" cy="50" r="46"></circle>
+            </svg>
+            <img src="assets/open-treasure-icon.png" alt="">
+        </button>
+        <p class="hint" id="hint" aria-live="polite">0 / 10</p>
+
+        <img class="sprite necklace" id="necklace" src="assets/necklace.png" alt="A sparkling blue sapphire necklace">
+        <p class="msg" id="msg">Exquisite Classics · Cursed Sapphire Necklace | 3,000,000 Ink Traces</p>
+    </main>
+
+    <!-- title screen: covers the game until Start is clicked -->
+    <section class="title" id="titleScreen" aria-label="Cryptic Notes title screen">
+        <h1 class="title-name">
+            <span class="word-1">Cryptic</span>
+            <img class="title-book" src="assets/cryptic-notes.png" alt="">
+            <span class="word-2">Notes</span>
+        </h1>
+        <button type="button" class="corner-btn start" id="startBtn">Start</button>
+        <!-- TODO: put your own GitHub link here -->
+        <a class="title-link" href="https://github.com/YOUR-USERNAME/YOUR-REPO" target="_blank" rel="noopener">View on GitHub</a>
+    </section>
+
+    <!-- goes back to the title screen; hidden while the title screen is showing -->
+    <button type="button" class="corner-btn back-btn" id="backBtn" hidden><span aria-hidden="true">&larr;</span> Back</button>
+    <button type="button" class="corner-btn again" id="again"><span aria-hidden="true">&#8635;</span> Play again</button>
+
+    <!-- only shown when a phone is held upright (see treasure.css) -->
+    <div class="rotate-hint">
+        <p><span aria-hidden="true">📱</span>Please rotate your phone to play</p>
+    </div>
+
+    <script src="treasure.js"></script>
+</body>
+</html>

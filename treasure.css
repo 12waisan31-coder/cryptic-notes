@@ -1,0 +1,367 @@
+/* ws/treasure.css - the treasure room game */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    min-height: 100dvh;
+    overflow: hidden;
+    background: #2a1208;
+}
+
+/* same trick as the room page: the scene fills the screen, everything inside is placed with % */
+.scene {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100vw, calc(100dvh * 2304 / 992));
+    aspect-ratio: 2304 / 992;
+    container-type: inline-size;         /* 1cqw = 1% of the scene width, used for text */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.bg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.sprite { position: absolute; image-rendering: pixelated; }
+
+/* ---------- character ---------- */
+.character { left: 30%; top: 70%; width: 13%; }
+
+.character.cheer { animation: hop 0.6s ease-out 2; }
+
+@keyframes hop {
+    40% { transform: translateY(-6%); }
+}
+
+/* ---------- chest ----------
+   treasure-before / treasure-after / treasure-gear-switch are all 651x383,
+   so we stack them on one box and they line up. */
+.chest {
+    position: absolute;
+    left: 40%;
+    top: 67%;
+    width: 20%;
+    aspect-ratio: 651 / 383;
+}
+
+.chest img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+}
+
+.chest-open { 
+    opacity: 0;
+ }
+
+.gear {
+    transform-origin: 50% 60%;           /* centre of the gear inside the picture */
+    transition: transform 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+.chest.shake { animation: shake 0.15s linear; }
+
+@keyframes shake {
+    25% { transform: translateX(-0.4%); }
+    75% { transform: translateX(0.4%); }
+}
+
+.chest.opened .chest-closed,
+.chest.opened .gear { opacity: 0; }
+
+.chest.opened .chest-open { opacity: 1; }
+
+.chest.opened { animation: glow 1s ease-out; }
+
+@keyframes glow {
+    0%   { filter: brightness(2.2) drop-shadow(0 0 30px #fff3b0); }
+    100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+}
+
+/* ---------- the click button with the progress ring ---------- */
+.open-btn {
+    position: absolute;
+    left: 67%;
+    top: 50%;
+    width: 10%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.4s ease;
+}
+
+.open-btn img {
+    position: absolute;
+    inset: 4%;
+    width: 92%;
+    height: 92%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    transition: transform 0.08s ease;
+}
+
+.open-btn:hover img { transform: scale(1.06); }
+.open-btn:active img,
+.open-btn.pressed img { transform: scale(0.9); }
+
+.open-btn:focus-visible { outline: 3px solid #fff3b0; outline-offset: 6px; border-radius: 50%; }
+
+.open-btn:disabled { cursor: default; }
+.open-btn.gone { opacity: 0; pointer-events: none; }
+
+.ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);           /* start the ring from the top */
+    pointer-events: none;
+    overflow: visible;
+}
+
+.ring-track,
+.ring-fill { fill: none; stroke-width: 5; }
+
+.ring-track { stroke: rgba(40, 20, 10, 0.55); }
+
+.ring-fill {
+    stroke: #ffd84a;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.2s ease;
+    filter: drop-shadow(0 0 3px rgba(255, 216, 74, 0.9));
+}
+
+.hint {
+    position: absolute;
+    left: 67%;
+    top: 75%;
+    width: 10%;
+    text-align: center;
+    font-family: "DynaPuff", system-ui, sans-serif;
+    font-size: max(12px, 1.5cqw);
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(40, 10, 0, 0.9);
+    transition: opacity 0.4s ease;
+}
+
+.hint.gone { opacity: 0; }
+
+/* ---------- the necklace ---------- */
+.necklace {
+    left: 46.55%;
+    top: 42%;                    /* where the necklace stops (just above the chest) */
+    width: 6%;
+    opacity: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 0 14px rgba(208, 236, 255, 0.9));
+}
+
+.necklace.show {
+    animation: rise 1.2s ease-out forwards, float 2.4s ease-in-out 1.2s infinite;
+}
+
+@keyframes rise {
+    from { top: 60%; opacity: 0; transform: scale(0.3); }
+    to   { top: 42%; opacity: 1; transform: scale(1); }   /* keep this the same as .necklace top above */
+}
+
+@keyframes float {
+    50% { transform: translateY(-3%); }
+}
+
+/* ---------- message + play again ---------- */
+.msg {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: "DynaPuff", system-ui, sans-serif;
+    font-size: max(8px, 1.2cqw);
+    color: #ffffff;
+    text-shadow: 0 3px 6px rgba(40, 10, 0, 0.9);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.msg.show { opacity: 1; }
+
+/* ---------- back button + play again ----------
+   both are small, see-through pills in the corners of the screen, so they stay out of the way */
+.corner-btn {
+    position: fixed;
+    z-index: 5;
+    padding: 0.5rem 1.1rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(164, 176, 255, 0.55);
+    color: #d0d0ff;
+    font-family: "DynaPuff", system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transition: background-color 0.2s ease;
+}
+
+.corner-btn:hover { background: rgba(137, 153, 255, 0.55); }
+
+.corner-btn:focus-visible { outline: 3px solid #292c82; outline-offset: 3px; }
+
+.back-btn {
+    top: max(16px, env(safe-area-inset-top));
+    left: max(16px, env(safe-area-inset-left));
+}
+
+/* Play again fades in slowly after the necklace appears */
+.again {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    visibility: hidden;                  /* hidden = cannot be clicked or tabbed to */
+    opacity: 0;
+    transition: opacity 0.8s ease, visibility 0s 0.8s, background-color 0.2s ease;
+}
+
+.again.show {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.8s ease, visibility 0s, background-color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gear, .open-btn img, .ring-fill, .again { transition: none; }
+    .character.cheer, .chest.shake, .chest.opened, .necklace.show { animation: none; }
+    .necklace.show { opacity: 1; top: 30%; }
+}
+
+/* ---------- title screen ---------- */
+.title {
+    position: fixed;
+    inset: 0;
+    z-index: 4;                          /* above the game, below the Back button (z-index 5) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, 3vh, 28px);
+    padding: 16px;
+    background: #2a1208 url(assets/game-background.jpg) center / cover no-repeat;
+    font-family: "DynaPuff", system-ui, sans-serif;
+    color: #2b1f45;
+    transition: opacity 0.5s ease;
+}
+
+.title[hidden] { display: none; }
+.title.leaving { opacity: 0; }
+
+/* "Cryptic"  [book]  "Notes": the two side columns are equal, so the book stays in the middle */
+.title-name {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: clamp(6px, 2vw, 10px);
+    font-size: clamp(1.1rem, min(4.5vw, 8vh), 2.5rem); 
+    font-weight: 600;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.75);
+}
+
+.title-name .word-1 { text-align: right; }
+.title-name .word-2 { text-align: left; }
+
+.title-book {
+    width: clamp(80px, min(20vw, 40vh), 230px); 
+    height: auto;
+    image-rendering: pixelated;
+}
+
+.title .corner-btn.start {
+    position: static;                    /* a normal button here, not a corner one */
+    margin-top: -4vh;                    /* more negative = Start and the link move up */
+    padding: 0.7rem 2.2rem;
+    font-size: 1.2rem;
+    color: #fff;
+    background: rgba(90, 90, 190, 0.8);
+}
+
+.title .corner-btn.start:hover { background: rgba(70, 70, 170, 0.9); }
+
+.title-link {
+    color: #fff;
+    font-size: 0.95rem;
+    text-shadow: 0 2px 4px rgba(40, 10, 0, 0.8);
+    text-underline-offset: 3px;
+}
+
+.title-link:focus-visible { outline: 3px solid #fff3b0; outline-offset: 3px; border-radius: 4px; }
+
+/* phones: stack the name above the book */
+@media (max-width: 520px) {
+    .title-name { grid-template-columns: 1fr; justify-items: center; gap: 4px; }
+    .title-name .word-1,
+    .title-name .word-2 { text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .title { transition: none; }
+}
+
+
+.back-btn[hidden] { display: none; }
+
+
+/* ---------- phone held upright: ask the player to rotate ---------- */
+.rotate-hint { display: none; }
+
+@media (orientation: portrait) and (max-width: 700px) {
+    .rotate-hint {
+        position: fixed;
+        inset: 0;
+        z-index: 50;                     /* above the title screen and the buttons */
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: #2a1208;
+        color: #fff;
+        font-family: "DynaPuff", system-ui, sans-serif;
+        font-size: 1.3rem;
+        text-align: center;
+    }
+
+    .rotate-hint span {
+        display: block;
+        margin-bottom: 12px;
+        font-size: 3rem;
+        animation: tilt 1.6s ease-in-out infinite;
+    }
+}
+
+@keyframes tilt {
+    50% { transform: rotate(-90deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rotate-hint span { animation: none; }
+}
+
+/* short screens (phone held sideways): make the buttons smaller too */
+@media (max-height: 500px) {
+    .title .corner-btn.start {
+        margin-top: -2vh;
+        padding: 0.45rem 1.6rem;
+        font-size: 1rem;
+    }
+
+    .title-link { font-size: 0.85rem; }
+}
